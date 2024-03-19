@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -7,13 +7,31 @@ export interface SearchParams {
 }
 
 const getAllAdminsFormDB = async (params: any) => {
+  const andOption: Prisma.AdminWhereInput[] = [];
+
+  if (params.searchTerm) {
+    andOption.push({
+      OR: [
+        {
+          name: {
+            contains: params.searchTerm,
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: params.searchTerm,
+            mode: "insensitive",
+          },
+        },
+      ],
+    });
+  }
+
+  const whereOption: Prisma.AdminWhereInput = { AND: andOption };
+
   const data = await prisma.admin.findMany({
-    where: {
-      name: {
-        contains: params.searchTerm,
-        mode: "insensitive",
-      },
-    },
+    where: whereOption,
   });
 
   return data;
