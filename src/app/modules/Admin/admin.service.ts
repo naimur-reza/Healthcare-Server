@@ -11,20 +11,12 @@ const getAllAdminsFormDB = async (params: any) => {
 
   if (params.searchTerm) {
     andOption.push({
-      OR: [
-        {
-          name: {
-            contains: params.searchTerm,
-            mode: "insensitive",
-          },
+      OR: ["name", "email"].map(field => ({
+        [field]: {
+          contains: params.searchTerm,
+          mode: "insensitive",
         },
-        {
-          email: {
-            contains: params.searchTerm,
-            mode: "insensitive",
-          },
-        },
-      ],
+      })),
     });
   }
 
