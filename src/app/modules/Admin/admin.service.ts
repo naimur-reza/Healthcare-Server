@@ -7,8 +7,9 @@ export interface SearchParams {
   searchTerm: string;
 }
 
-const getAllAdminsFormDB = async (params: any) => {
+const getAllAdminsFormDB = async (params: any, options: any) => {
   const { searchTerm, ...filterData } = params;
+  const { page, limit } = options;
 
   const andOption: Prisma.AdminWhereInput[] = [];
 
@@ -37,6 +38,8 @@ const getAllAdminsFormDB = async (params: any) => {
 
   const data = await prisma.admin.findMany({
     where: whereOption,
+    skip: Number(page - 1) * Number(limit),
+    take: Number(limit),
   });
 
   return data;

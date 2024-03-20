@@ -19,8 +19,8 @@ const getAllAdmins = async (req: Request, res: Response) => {
 
   try {
     const filter = pick(req.query, adminFilterableFields);
-
-    const result = await AdminService.getAllAdminsFormDB(filter);
+    const options = pick(req.query, ["page", "limit"]);
+    const result = await AdminService.getAllAdminsFormDB(filter, options);
 
     res.status(200).send({
       success: true,
