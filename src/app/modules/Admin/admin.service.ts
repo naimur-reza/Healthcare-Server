@@ -7,14 +7,27 @@ export interface SearchParams {
 }
 
 const getAllAdminsFormDB = async (params: any) => {
+  const { searchTerm, ...filterData } = params;
+  const searchableFields = ["name", "email"];
+
   const andOption: Prisma.AdminWhereInput[] = [];
 
-  if (params.searchTerm) {
+  if (searchTerm) {
     andOption.push({
-      OR: ["name", "email"].map(field => ({
+      OR: searchableFields.map(field => ({
         [field]: {
-          contains: params.searchTerm,
+          contains: searchTerm,
           mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andOption.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: filterData[key],
         },
       })),
     });
