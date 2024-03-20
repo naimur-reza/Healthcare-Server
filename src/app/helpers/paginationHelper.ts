@@ -1,8 +1,8 @@
 export interface IOptions {
-  page: number;
-  limit: number;
-  sortBy: string;
-  sortOrder: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export const calculatePagination = (options: IOptions) => {

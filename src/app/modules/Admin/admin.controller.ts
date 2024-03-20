@@ -2,21 +2,9 @@
 import { Request, Response } from "express";
 import { AdminService } from "./admin.service";
 import { adminFilterableFields } from "./admin.constant";
+import { pick } from "../../shared/pick";
 
 const getAllAdmins = async (req: Request, res: Response) => {
-  const pick = <T extends Record<string, unknown>, K extends keyof T>(
-    obj: T,
-    fields: K[],
-  ) => {
-    const finalObj: Partial<T> = {};
-    for (const key of fields) {
-      if (obj && Object.prototype.hasOwnProperty.call(obj, key)) {
-        finalObj[key] = obj[key];
-      }
-    }
-    return finalObj;
-  };
-
   try {
     const filter = pick(req.query, adminFilterableFields);
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
