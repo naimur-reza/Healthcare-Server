@@ -5,6 +5,7 @@ import prisma from "../../shared/prisma";
 interface IUser {
   password: string;
   admin: {
+    name: string;
     email: string;
   };
   role: userRole;
