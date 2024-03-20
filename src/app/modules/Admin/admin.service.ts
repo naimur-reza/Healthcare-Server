@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { searchableFields } from "./admin.constant";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +9,6 @@ export interface SearchParams {
 
 const getAllAdminsFormDB = async (params: any) => {
   const { searchTerm, ...filterData } = params;
-  const searchableFields = ["name", "email"];
 
   const andOption: Prisma.AdminWhereInput[] = [];
 
