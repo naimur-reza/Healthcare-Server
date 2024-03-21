@@ -13,7 +13,8 @@ const getAllAdmins = async (req: Request, res: Response) => {
     res.status(200).send({
       success: true,
       message: "Admins retrieved successfully!",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   } catch (error: any) {
     res.status(400).send({

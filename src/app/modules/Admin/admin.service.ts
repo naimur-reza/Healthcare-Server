@@ -54,7 +54,13 @@ const getAllAdminsFormDB = async (
           },
   });
 
-  return data;
+  const meta = {
+    page: Number(options.page) || 1,
+    limit,
+    total: data.length,
+  };
+
+  return { data, meta };
 };
 
 export const AdminService = { getAllAdminsFormDB };
