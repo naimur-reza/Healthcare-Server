@@ -73,7 +73,7 @@ const getSingleDataFromDB = async (id: string) => {
   return data;
 };
 
-const updateAdminDataIntoDB = async (id: string, data: Admin) => {
+const updateAdminDataIntoDB = async (id: string, data: Partial<Admin>) => {
   const updateData = await prisma.admin.update({
     where: {
       id,
