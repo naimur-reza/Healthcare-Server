@@ -10,9 +10,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
     message: "Healthcare server is running",
+  });
+});
+
+app.use((req, res) => {
+  res.json({
+    success: false,
+    message: "Route not found!",
   });
 });
