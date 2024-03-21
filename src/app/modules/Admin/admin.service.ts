@@ -63,4 +63,14 @@ const getAllAdminsFormDB = async (
   return { data, meta };
 };
 
-export const AdminService = { getAllAdminsFormDB };
+const getSingleDataFromDB = async (id: string) => {
+  const data = await prisma.admin.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  return data;
+};
+
+export const AdminService = { getAllAdminsFormDB, getSingleDataFromDB };
