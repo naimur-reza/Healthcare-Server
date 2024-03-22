@@ -66,7 +66,7 @@ const getAllAdminsFormDB = async (
   return { data, meta };
 };
 
-const getSingleDataFromDB = async (id: string) => {
+const getSingleDataFromDB = async (id: string): Promise<Admin | null> => {
   const data = await prisma.admin.findUnique({
     where: {
       id: id,
@@ -77,10 +77,14 @@ const getSingleDataFromDB = async (id: string) => {
   return data;
 };
 
-const updateAdminDataIntoDB = async (id: string, data: Partial<Admin>) => {
+const updateAdminDataIntoDB = async (
+  id: string,
+  data: Partial<Admin>,
+): Promise<Admin | null> => {
   const updatedData = await prisma.admin.update({
     where: {
       id,
+      isDeleted: false,
     },
     data: data,
   });
@@ -88,10 +92,11 @@ const updateAdminDataIntoDB = async (id: string, data: Partial<Admin>) => {
   return updatedData;
 };
 
-const deleteDataFromDB = async (id: string) => {
+const deleteDataFromDB = async (id: string): Promise<Admin | null> => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -111,7 +116,7 @@ const deleteDataFromDB = async (id: string) => {
 
   return deletedData;
 };
-const softDeleteDataFromDB = async (id: string) => {
+const softDeleteDataFromDB = async (id: string): Promise<Admin | null> => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
