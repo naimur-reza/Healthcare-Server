@@ -46,10 +46,20 @@ const deleteAdminData = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const softAdminDelete = catchAsync(async (req, res) => {
+  const result = await AdminService.softDeleteDataFromDB(req.params.id);
+
+  res.status(200).send({
+    success: true,
+    message: "Admin deleted successfully!",
+    data: result,
+  });
+});
 
 export const AdminController = {
   getAllAdmins,
   getSingleAdmin,
   updateAdminData,
   deleteAdminData,
+  softAdminDelete,
 };
