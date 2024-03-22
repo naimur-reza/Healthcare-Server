@@ -40,7 +40,7 @@ const updateAdminData = catchAsync(async (req, res) => {
 const deleteAdminData = catchAsync(async (req, res) => {
   const result = await AdminService.deleteDataFromDB(req.params.id);
 
-  res.status(204).send({
+  res.status(200).send({
     success: true,
     message: "Admin deleted successfully!",
     data: result,
