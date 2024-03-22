@@ -1,6 +1,8 @@
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import appRouter from "./app/routes";
+import notFound from "./app/handlers/NotFoundHandler";
+import globalErrorHandler from "./app/handlers/GlobalErrorHandler";
 
 export const app: Application = express();
 
@@ -17,18 +19,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  res.status(500).json({
-    success: false,
-    message: err.message || "Something broke!",
-    error: err,
-  });
-  next();
-});
-
-app.use((req, res) => {
-  res.json({
-    success: false,
-    message: "Route not found!",
-  });
-});
+//handling global app error
+app.use(globalErrorHandler);
+//handling not found route
+app.use(notFound);
