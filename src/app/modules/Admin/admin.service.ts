@@ -38,7 +38,10 @@ const getAllAdminsFormDB = async (
     });
   }
 
-  const whereOption: Prisma.AdminWhereInput = { AND: andOption };
+  const whereOption: Prisma.AdminWhereInput = {
+    AND: andOption,
+    isDeleted: false,
+  };
 
   const data = await prisma.admin.findMany({
     where: whereOption,
@@ -67,6 +70,7 @@ const getSingleDataFromDB = async (id: string) => {
   const data = await prisma.admin.findUnique({
     where: {
       id: id,
+      isDeleted: false,
     },
   });
 
