@@ -1,15 +1,14 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
-import { userRoutes } from "./app/modules/User/user.routes";
-import { adminRoutes } from "./app/modules/Admin/admin.routes";
+import appRouter from "./app/routes";
+
 export const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1", appRouter);
 
 app.get("/", (req, res) => {
   res.json({
