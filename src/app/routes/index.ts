@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { adminRoutes } from "../modules/Admin/admin.routes";
 import { userRoutes } from "../modules/User/user.routes";
+import { authRoutes } from "../modules/Auth/auth.routes";
 
 const appRouter = Router();
 
@@ -12,6 +13,10 @@ const options = [
   {
     path: "/admin",
     routes: adminRoutes,
+  },
+  {
+    path: "/auth",
+    routes: authRoutes,
   },
 ];
 
