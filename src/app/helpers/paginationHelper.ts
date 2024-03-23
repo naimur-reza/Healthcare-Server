@@ -1,9 +1,5 @@
-export interface IOptions {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: string;
-}
+import { IOptions } from "../modules/Admin/admin.interface";
+
 
 export const calculatePagination = (options: IOptions) => {
   const page: number = Number(options.page) || 1;

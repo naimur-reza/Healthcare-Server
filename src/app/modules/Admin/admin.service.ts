@@ -1,6 +1,7 @@
 import { Admin, Prisma, PrismaClient, UserStatus } from "@prisma/client";
 import { searchableFields } from "./admin.constant";
-import { IOptions, calculatePagination } from "../../helpers/paginationHelper";
+import { calculatePagination } from "../../helpers/paginationHelper";
+import { IOptions, IParams } from "./admin.interface";
 
 const prisma = new PrismaClient();
 
@@ -8,10 +9,7 @@ export interface SearchParams {
   searchTerm: string;
 }
 
-const getAllAdminsFormDB = async (
-  params: Record<string, unknown>,
-  options: IOptions,
-) => {
+const getAllAdminsFormDB = async (params: IParams, options: IOptions) => {
   const { searchTerm, ...filterData } = params;
   const { limit, skip } = calculatePagination(options);
 
@@ -32,7 +30,7 @@ const getAllAdminsFormDB = async (
     andOption.push({
       AND: Object.keys(filterData).map(key => ({
         [key]: {
-          equals: filterData[key],
+          equals: (filterData as any)[key],
         },
       })),
     });
