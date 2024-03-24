@@ -2,13 +2,13 @@
 import { NextFunction, Request, Response } from "express";
 
 export const globalErrorHandler = (
-  err: Error,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   console.log("Touch error...");
-  return res.status(500).json({
+  return res.status(err.statusCode).json({
     success: false,
     message: err.message || "Something broke!",
     error: err,
