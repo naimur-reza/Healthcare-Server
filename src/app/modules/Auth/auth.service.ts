@@ -2,6 +2,7 @@ import prisma from "../../shared/prisma";
 import bcrypt from "bcrypt";
 import generateToken from "../../utils/generateToken";
 import verifyToken from "../../utils/verifyToken";
+import { UserStatus } from "@prisma/client";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log("User logging in...");
@@ -9,6 +10,7 @@ const login = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
+      status: UserStatus.ACTIVE,
     },
   });
 
@@ -41,6 +43,7 @@ const refreshToken = async (token: string) => {
   const isExistUser = await prisma.user.findUniqueOrThrow({
     where: {
       email: user.email,
+      status: UserStatus.ACTIVE,
     },
   });
 
