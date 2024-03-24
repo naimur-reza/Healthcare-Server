@@ -21,13 +21,18 @@ const login = async (payload: { email: string; password: string }) => {
     email: userData.email,
   };
 
+  const refreshToken = jwt.sign(jwtPayload, "secret", {
+    expiresIn: "30d",
+  });
+
   const token = jwt.sign(jwtPayload, "secret", {
-    expiresIn: "5min",
+    expiresIn: "5m",
   });
 
   return {
     userData,
     token,
+    refreshToken,
   };
 };
 
