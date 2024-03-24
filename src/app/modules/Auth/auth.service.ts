@@ -1,7 +1,6 @@
 import prisma from "../../shared/prisma";
 import bcrypt from "bcrypt";
 import generateToken from "../../utils/generateToken";
-import configs from "../../configs";
 import verifyToken from "../../utils/verifyToken";
 
 const login = async (payload: { email: string; password: string }) => {
@@ -24,7 +23,7 @@ const login = async (payload: { email: string; password: string }) => {
     email: userData.email,
   };
 
-  const refreshToken = generateToken(jwtPayload, configs.jwt_secret!, "30d");
+  const refreshToken = generateToken(jwtPayload);
 
   const token = generateToken(jwtPayload);
 
