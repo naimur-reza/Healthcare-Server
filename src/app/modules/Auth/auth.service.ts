@@ -22,8 +22,8 @@ const login = async (payload: { email: string; password: string }) => {
   if (!comparePassword) throw new Error("Password does not matched!");
 
   const jwtPayload = {
-    id: userData.id,
     email: userData.email,
+    role: userData.role,
   };
 
   const refreshToken = generateToken(
@@ -57,8 +57,8 @@ const refreshToken = async (token: string) => {
   });
 
   const payload = {
-    id: isExistUser.id,
     email: isExistUser.email,
+    role: isExistUser.role,
   };
 
   const newToken = generateToken(
