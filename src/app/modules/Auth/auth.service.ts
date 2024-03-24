@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import generateToken from "../../utils/generateToken";
 import verifyToken from "../../utils/verifyToken";
 import { UserStatus } from "@prisma/client";
+import configs from "../../configs";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log("User logging in...");
@@ -25,9 +26,17 @@ const login = async (payload: { email: string; password: string }) => {
     email: userData.email,
   };
 
-  const refreshToken = generateToken(jwtPayload);
+  const refreshToken = generateToken(
+    jwtPayload,
+    configs.jwt_refresh_secret!,
+    configs.jwt_refresh_expires_in!,
+  );
 
-  const token = generateToken(jwtPayload);
+  const token = generateToken(
+    jwtPayload,
+    configs.jwt_secret!,
+    configs.jwt_access_secret_expires_in!,
+  );
 
   return {
     userData,
@@ -52,7 +61,11 @@ const refreshToken = async (token: string) => {
     email: isExistUser.email,
   };
 
-  const newToken = generateToken(payload);
+  const newToken = generateToken(
+    payload,
+    configs.jwt_secret!,
+    configs.jwt_access_secret_expires_in!,
+  );
 
   return newToken;
 };
