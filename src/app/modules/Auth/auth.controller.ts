@@ -16,6 +16,22 @@ const userLogin: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const refreshToken: RequestHandler = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  const token = await authServices.refreshToken(refreshToken);
+
+  res.cookie("refreshToken", refreshToken, {});
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Logged in successful",
+    data: { token },
+  });
+});
+
 export const authController = {
   userLogin,
+  refreshToken,
 };

@@ -1,6 +1,9 @@
 import prisma from "../../shared/prisma";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import generateToken from "../../utils/generateToken";
+import configs from "../../configs";
+import verifyToken from "../../utils/verifyToken";
+
 const login = async (payload: { email: string; password: string }) => {
   console.log("User logging in...");
 
@@ -21,13 +24,9 @@ const login = async (payload: { email: string; password: string }) => {
     email: userData.email,
   };
 
-  const refreshToken = jwt.sign(jwtPayload, "secret", {
-    expiresIn: "30d",
-  });
+  const refreshToken = generateToken(jwtPayload, configs.jwt_secret!, "30d");
 
-  const token = jwt.sign(jwtPayload, "secret", {
-    expiresIn: "5m",
-  });
+  const token = generateToken(jwtPayload);
 
   return {
     userData,
@@ -36,6 +35,27 @@ const login = async (payload: { email: string; password: string }) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  const user = verifyToken(token);
+
+  console.log(user);
+  const isExistUser = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const payload = {
+    id: isExistUser.id,
+    email: isExistUser.email,
+  };
+
+  const newToken = generateToken(payload);
+
+  return newToken;
+};
+
 export const authServices = {
   login,
+  refreshToken,
 };
