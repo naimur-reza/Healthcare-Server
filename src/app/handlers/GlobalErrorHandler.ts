@@ -8,7 +8,7 @@ export const globalErrorHandler = (
   next: NextFunction,
 ) => {
   console.log("Touch error...");
-  return res.status(err.statusCode).json({
+  return res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || "Something broke!",
     error: err,

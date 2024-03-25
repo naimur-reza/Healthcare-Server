@@ -49,7 +49,7 @@ const login = async (payload: { email: string; password: string }) => {
 };
 
 const refreshToken = async (token: string) => {
-  const user = verifyToken(token);
+  const user = verifyToken(token, configs.jwt_refresh_secret!);
 
   console.log(user);
   const isExistUser = await prisma.user.findUniqueOrThrow({
@@ -134,9 +134,41 @@ const forgotPassword = async (payload: { email: string }) => {
   return null;
 };
 
+const resetPassword = async (
+  token: string,
+  payload: { id: string; password: string },
+) => {
+  const isValidToken = verifyToken(
+    token,
+    configs.password_reset_token!,
+  ) as JwtPayload;
+  if (!isValidToken) throw new GenericError(403, "Forbidden access");
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: payload.id,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  const hashPassword = bcrypt.hashSync(payload.password, 10);
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      password: hashPassword,
+    },
+  });
+
+  return { message: "Password reset successfully!" };
+};
+
 export const authServices = {
   login,
   refreshToken,
   changeUserPassword,
   forgotPassword,
+  resetPassword,
 };
