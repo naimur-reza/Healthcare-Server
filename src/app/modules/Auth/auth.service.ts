@@ -4,6 +4,8 @@ import generateToken from "../../utils/generateToken";
 import verifyToken from "../../utils/verifyToken";
 import { UserStatus } from "@prisma/client";
 import configs from "../../configs";
+import GenericError from "../../errors/GenericError";
+import { JwtPayload } from "jsonwebtoken";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log("User logging in...");
@@ -70,7 +72,32 @@ const refreshToken = async (token: string) => {
   return newToken;
 };
 
+const changeUserPassword = async (
+  user: JwtPayload,
+  { newPassword, oldPassword }: { newPassword: string; oldPassword: string },
+) => {
+  const comparePassword = bcrypt.compareSync(oldPassword, user.password);
+  if (!comparePassword) throw new GenericError(400, "Incorrect password!");
+
+  const hashPassword = bcrypt.hashSync(newPassword, 10);
+
+  await prisma.user.update({
+    where: {
+      email: user.email,
+    },
+    data: {
+      password: hashPassword,
+      needPasswordChange: false,
+    },
+  });
+
+  return {
+    message: "Password changed successfully!",
+  };
+};
+
 export const authServices = {
   login,
   refreshToken,
+  changeUserPassword,
 };
