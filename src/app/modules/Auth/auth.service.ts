@@ -6,6 +6,7 @@ import { UserStatus } from "@prisma/client";
 import configs from "../../configs";
 import GenericError from "../../errors/GenericError";
 import { JwtPayload } from "jsonwebtoken";
+import { sendEmail } from "../../utils/sendEmail";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log("User logging in...");
@@ -117,7 +118,20 @@ const forgotPassword = async (payload: { email: string }) => {
     configs.password_reset_link +
     `?id=${user.id}&email=${user.email}&resetToken=${resetToken}`;
 
-  return resetLink;
+  await sendEmail(
+    user.email,
+    `
+  <div>
+    <a href="${resetLink}">
+      <button>
+        Reset password
+      </button> 
+    </a>
+  </div>
+  `,
+  );
+
+  return null;
 };
 
 export const authServices = {
