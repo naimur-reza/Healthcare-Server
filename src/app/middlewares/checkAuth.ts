@@ -19,7 +19,7 @@ export const checkAuth = (...roles: userRole[]) => {
           status: UserStatus.ACTIVE,
         },
       });
-
+      req.user = isExistUser;
       const isValidRole = roles.some(role => role === isExistUser.role);
 
       if (!isValidRole) throw new Error("Unauthorized access");
