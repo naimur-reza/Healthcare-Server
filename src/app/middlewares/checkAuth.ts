@@ -3,6 +3,7 @@ import verifyToken from "../utils/verifyToken";
 import { userRole, UserStatus } from "@prisma/client";
 import prisma from "../shared/prisma";
 import GenericError from "../errors/GenericError";
+import configs from "../configs";
 
 export const checkAuth = (...roles: userRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +11,7 @@ export const checkAuth = (...roles: userRole[]) => {
       const token = req.headers.authorization;
       if (!token) throw new GenericError(401, "Unauthorized access");
 
-      const user = verifyToken(token);
+      const user = verifyToken(token, configs.jwt_secret!);
 
       console.log(user);
       const isExistUser = await prisma.user.findUniqueOrThrow({

@@ -1,21 +1,31 @@
-import { userRole } from "@prisma/client";
+import { Admin, userRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../shared/prisma";
-
+import { sendImageToCloudinary } from "../../helpers/fileUploader";
+import { UploadApiResponse } from "cloudinary";
 interface IUser {
   password: string;
-  admin: {
-    name: string;
-    email: string;
-  };
+  admin: Admin;
   role: userRole;
 }
 
 const getAllUsersFromDB = async () => {
-  // const data = await prisma
+  const users = await prisma.user.findMany({
+    where: { status: UserStatus.ACTIVE },
+    // select: { password: false },
+  });
+  return users;
 };
 
-const createAdmin = async (data: IUser) => {
+const createAdmin = async (file: any, data: IUser) => {
+  if (file) {
+    const uploadFile = (await sendImageToCloudinary(
+      file.originalname,
+      file.path,
+    )) as UploadApiResponse;
+    data.admin.profilePhoto = uploadFile.secure_url;
+  }
+
   const hashPassword = await bcrypt.hash(data.password, 10);
   const userData = {
     email: data.admin.email,
