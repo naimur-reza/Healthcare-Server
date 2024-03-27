@@ -50,6 +50,7 @@ const createAdmin = async (file: any, data: IUser) => {
 
 const createDoctor = async (file: any, data: any) => {
   console.log("Doctor Running");
+  console.log("Data", data);
 };
 
 export const userServices = {

@@ -13,7 +13,7 @@ router.get("/", userControllers.getAllUsers);
 
 router.post(
   "/create-admin",
-  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  // checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
   upload.single("file"),
   parseFile,
   validateRequest(userValidation.adminSchema),

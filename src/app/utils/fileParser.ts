@@ -13,8 +13,9 @@ export const parseFile = async (
 
     // Parse req.body.data as JSON
     req.body = JSON.parse(req.body.data);
+
     next();
   } catch (error) {
-    next();
+    next(error);
   }
 };

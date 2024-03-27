@@ -6,6 +6,7 @@ const adminSchema = z.object({
     admin: z.object({
       name: z.string(),
       email: z.string(),
+      contactNumber: z.string(),
     }),
   }),
 });
@@ -16,7 +17,6 @@ const doctorSchema = z.object({
   body: z.object({
     password: z.string(),
     doctor: z.object({
-      id: z.string(),
       name: z.string(),
       email: z.string(),
       profilePhoto: z.string().optional(),
@@ -28,10 +28,7 @@ const doctorSchema = z.object({
       qualification: z.string(),
       currentWorkingPlace: z.string(),
       designation: z.string(),
-      isDeleted: z.boolean(),
       averageRating: z.number(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
     }),
   }),
 });
