@@ -64,10 +64,10 @@ model Doctor {
   gender              Gender
   appointmentFee      Int
   qualification       String
-  currentWorkingPlace String
+  currentWorkingPlace String?
   designation         String
-  isDeleted           Boolean
-  averageRating       Float
+  isDeleted           Boolean? @default(false)
+  averageRating       Float?   @default(0)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
