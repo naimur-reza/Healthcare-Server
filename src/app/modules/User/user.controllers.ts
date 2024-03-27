@@ -23,7 +23,18 @@ const createAdmin = async (req: Request, res: Response) => {
   });
 };
 
+const createDoctor = async (req: Request, res: Response) => {
+  const doctor = await userServices.createDoctor(req.file, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Doctor created successfully!",
+    data: doctor,
+  });
+};
+
 export const userControllers = {
   getAllUsers,
   createAdmin,
+  createDoctor,
 };

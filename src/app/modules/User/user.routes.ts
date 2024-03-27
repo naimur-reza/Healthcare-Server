@@ -12,12 +12,21 @@ const router = Router();
 router.get("/", userControllers.getAllUsers);
 
 router.post(
-  "/",
-  checkAuth(userRole.ADMIN),
+  "/create-admin",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
   upload.single("file"),
   parseFile,
-  validateRequest(userValidation.createUserValidation),
+  validateRequest(userValidation.adminSchema),
   userControllers.createAdmin,
+);
+
+router.post(
+  "/create-doctor",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  upload.single("file"),
+  parseFile,
+  validateRequest(userValidation.doctorSchema),
+  userControllers.createDoctor,
 );
 
 export const userRoutes = router;

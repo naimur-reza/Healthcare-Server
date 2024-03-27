@@ -48,7 +48,12 @@ const createAdmin = async (file: any, data: IUser) => {
   return res;
 };
 
+const createDoctor = async (file: any, data: any) => {
+  console.log("Doctor Running");
+};
+
 export const userServices = {
   getAllUsersFromDB,
   createAdmin,
+  createDoctor,
 };
