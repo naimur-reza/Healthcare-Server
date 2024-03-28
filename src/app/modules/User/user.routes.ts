@@ -9,11 +9,15 @@ import { parseFile } from "../../utils/fileParser";
 
 const router = Router();
 
-router.get("/", userControllers.getAllUsers);
+router.get(
+  "/",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  userControllers.getAllUsers,
+);
 
 router.post(
   "/create-admin",
-  // checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
   upload.single("file"),
   parseFile,
   validateRequest(userValidation.adminSchema),
@@ -28,5 +32,7 @@ router.post(
   validateRequest(userValidation.doctorSchema),
   userControllers.createDoctor,
 );
+
+router.patch("/:id/status", userControllers.updateUserStatus);
 
 export const userRoutes = router;

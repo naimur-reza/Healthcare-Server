@@ -38,8 +38,21 @@ const createDoctor = async (req: Request, res: Response) => {
   });
 };
 
+const updateUserStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const result = await userServices.updateStatus(id, status);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User status successfully!",
+    data: result,
+  });
+};
+
 export const userControllers = {
   getAllUsers,
   createAdmin,
   createDoctor,
+  updateUserStatus,
 };

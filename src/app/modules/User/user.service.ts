@@ -1,4 +1,4 @@
-import { Prisma, userRole } from "@prisma/client";
+import { Prisma, userRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../shared/prisma";
 import { sendImageToCloudinary } from "../../helpers/fileUploader";
@@ -36,7 +36,7 @@ const getAllUsersFromDB = async (params: IParams, options: IOptions) => {
   }
 
   const whereCondition: Prisma.UserWhereInput =
-    andOption.length > 0 ? { AND: andOption } : {};
+    andOption.length > 0 ? { AND: andOption, status: "ACTIVE" } : {};
 
   const data = await prisma.user.findMany({
     where: whereCondition,
@@ -132,8 +132,22 @@ const createDoctor = async (file: any, data: IDoctor) => {
   return res;
 };
 
+const updateStatus = async (id: string, status: UserStatus) => {
+  const update = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return update;
+};
+
 export const userServices = {
   getAllUsersFromDB,
   createAdmin,
   createDoctor,
+  updateStatus,
 };
