@@ -133,6 +133,10 @@ const createDoctor = async (file: any, data: IDoctor) => {
 };
 
 const updateStatus = async (id: string, status: UserStatus) => {
+  await prisma.user.findUniqueOrThrow({
+    where: { id },
+  });
+
   const update = await prisma.user.update({
     where: {
       id,
