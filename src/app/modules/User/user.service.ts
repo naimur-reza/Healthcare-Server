@@ -7,6 +7,7 @@ import { IAdmin, IDoctor, IPatient } from "./user.interface";
 import { calculatePagination } from "../../helpers/paginationHelper";
 import { IOptions, IParams } from "../Admin/admin.interface";
 import { userSearchAbleFields } from "./user.constant";
+import { JwtPayload } from "jsonwebtoken";
 
 const getAllUsersFromDB = async (params: IParams, options: IOptions) => {
   const { searchTerm, ...filterData } = params;
@@ -179,10 +180,39 @@ const updateStatus = async (id: string, status: UserStatus) => {
   return update;
 };
 
+const getMyProfile = async (user: JwtPayload) => {
+  const role = user.role as userRole;
+
+  let userData;
+
+  if (role === userRole.ADMIN || userRole.SUPER_ADMIN) {
+    userData = await prisma.admin.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+  } else if (role === userRole.PATIENT) {
+    userData = await prisma.patient.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+  } else if (role === userRole.DOCTOR) {
+    userData = await prisma.doctor.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+  }
+
+  return {...userData, password: undefined};
+};
+
 export const userServices = {
   getAllUsersFromDB,
   createAdmin,
   createDoctor,
   createPatient,
   updateStatus,
+  getMyProfile,
 };

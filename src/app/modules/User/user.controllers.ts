@@ -60,10 +60,22 @@ const updateUserStatus = async (req: Request, res: Response) => {
   });
 };
 
+const getMyProfile = async (req: Request, res: Response) => {
+  const user = req.user;
+  const result = await userServices.getMyProfile(user);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile retrieved successfully!",
+    data: result,
+  });
+};
+
 export const userControllers = {
   getAllUsers,
   createAdmin,
   createDoctor,
   createPatient,
   updateUserStatus,
+  getMyProfile,
 };
