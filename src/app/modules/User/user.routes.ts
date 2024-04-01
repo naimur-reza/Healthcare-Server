@@ -17,7 +17,7 @@ router.get(
 
 router.post(
   "/create-admin",
-  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  // checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
   upload.single("file"),
   parseFile,
   validateRequest(userValidation.adminSchema),
@@ -31,6 +31,15 @@ router.post(
   parseFile,
   validateRequest(userValidation.doctorSchema),
   userControllers.createDoctor,
+);
+
+router.post(
+  "/create-patient",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
+  upload.single("file"),
+  parseFile,
+  validateRequest(userValidation.patientSchema),
+  userControllers.createPatient,
 );
 
 router.patch("/:id/status", userControllers.updateUserStatus);

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "../../shared/prisma";
 import { sendImageToCloudinary } from "../../helpers/fileUploader";
 import { UploadApiResponse } from "cloudinary";
-import { IAdmin, IDoctor } from "./user.interface";
+import { IAdmin, IDoctor, IPatient } from "./user.interface";
 import { calculatePagination } from "../../helpers/paginationHelper";
 import { IOptions, IParams } from "../Admin/admin.interface";
 import { userSearchAbleFields } from "./user.constant";
@@ -131,6 +131,36 @@ const createDoctor = async (file: any, data: IDoctor) => {
 
   return res;
 };
+const createPatient = async (file: any, data: IPatient) => {
+  if (file) {
+    const uploadFile = (await sendImageToCloudinary(
+      file.originalname,
+      file.path,
+    )) as UploadApiResponse;
+    data.patient.profilePhoto = uploadFile.secure_url;
+  }
+
+  const hashPassword = await bcrypt.hash(data.password, 10);
+  const userData = {
+    email: data.patient.email,
+    password: hashPassword,
+    role: userRole.PATIENT,
+  };
+
+  const res = await prisma.$transaction(async transaction => {
+    await transaction.user.create({
+      data: userData,
+    });
+
+    const createPatient = await transaction.patient.create({
+      data: data.patient,
+    });
+
+    return createPatient;
+  });
+
+  return res;
+};
 
 const updateStatus = async (id: string, status: UserStatus) => {
   await prisma.user.findUniqueOrThrow({
@@ -153,5 +183,6 @@ export const userServices = {
   getAllUsersFromDB,
   createAdmin,
   createDoctor,
+  createPatient,
   updateStatus,
 };

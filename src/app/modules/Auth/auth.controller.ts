@@ -12,7 +12,7 @@ const userLogin: RequestHandler = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: "Logged in successful",
-    data: { userData, token },
+    data: { ...userData, token },
   });
 });
 

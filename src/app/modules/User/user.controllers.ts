@@ -38,6 +38,16 @@ const createDoctor = async (req: Request, res: Response) => {
   });
 };
 
+const createPatient = async (req: Request, res: Response) => {
+  const patient = await userServices.createPatient(req.file, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Patient created successfully!",
+    data: patient,
+  });
+};
+
 const updateUserStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -54,5 +64,6 @@ export const userControllers = {
   getAllUsers,
   createAdmin,
   createDoctor,
+  createPatient,
   updateUserStatus,
 };

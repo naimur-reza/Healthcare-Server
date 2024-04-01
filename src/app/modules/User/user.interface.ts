@@ -1,4 +1,4 @@
-import { Admin, Doctor } from "@prisma/client";
+import { Admin, Doctor, Patient } from "@prisma/client";
 
 export interface IAdmin {
   password: string;
@@ -8,4 +8,9 @@ export interface IAdmin {
 export interface IDoctor {
   password: string;
   doctor: Doctor;
+}
+
+export interface IPatient {
+  password: string;
+  patient: Patient;
 }

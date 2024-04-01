@@ -42,7 +42,7 @@ const login = async (payload: { email: string; password: string }) => {
   );
 
   return {
-    userData,
+    userData: { ...userData, password: undefined },
     token,
     refreshToken,
   };
