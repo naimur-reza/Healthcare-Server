@@ -74,7 +74,7 @@ const getMyProfile = async (req: Request, res: Response) => {
 const updateMyProfile = async (req: Request, res: Response) => {
   const user = req.user;
   const payload = req.body;
-  const result = await userServices.updateMyProfile(user, payload);
+  const result = await userServices.updateMyProfile(req.file,user, payload);
   sendResponse(res, {
     statusCode: 200,
     success: true,

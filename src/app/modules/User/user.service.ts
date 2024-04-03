@@ -208,7 +208,15 @@ const getMyProfile = async (user: JwtPayload) => {
   return { ...userData, password: undefined };
 };
 
-const updateMyProfile = async (user: JwtPayload, payload: any) => {
+const updateMyProfile = async (file: any, user: JwtPayload, payload: any) => {
+  if (file) {
+    const uploadFile = (await sendImageToCloudinary(
+      file.originalname,
+      file.path,
+    )) as UploadApiResponse;
+    payload.profilePhoto = uploadFile.secure_url;
+  }
+
   const role = user.role as userRole;
 
   let userData;

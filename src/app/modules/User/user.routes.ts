@@ -51,7 +51,7 @@ router.post(
 router.patch("/:id/status", userControllers.updateUserStatus);
 
 router.patch(
-  "/:id/update-my-profile",
+  "/update-my-profile",
   checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
   upload.single("file"),
   parseFile,
