@@ -205,7 +205,38 @@ const getMyProfile = async (user: JwtPayload) => {
     });
   }
 
-  return {...userData, password: undefined};
+  return { ...userData, password: undefined };
+};
+
+const updateMyProfile = async (user: JwtPayload, payload: any) => {
+  const role = user.role as userRole;
+
+  let userData;
+
+  if (role === userRole.ADMIN || userRole.SUPER_ADMIN) {
+    userData = await prisma.admin.update({
+      where: {
+        email: user.email,
+      },
+      data: payload,
+    });
+  } else if (role === userRole.PATIENT) {
+    userData = await prisma.patient.update({
+      where: {
+        email: user.email,
+      },
+      data: payload,
+    });
+  } else if (role === userRole.DOCTOR) {
+    userData = await prisma.doctor.update({
+      where: {
+        email: user.email,
+      },
+      data: payload,
+    });
+  }
+
+  return { ...userData, password: undefined };
 };
 
 export const userServices = {
@@ -215,4 +246,5 @@ export const userServices = {
   createPatient,
   updateStatus,
   getMyProfile,
+  updateMyProfile,
 };

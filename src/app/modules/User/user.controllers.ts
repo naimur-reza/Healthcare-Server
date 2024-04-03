@@ -71,6 +71,18 @@ const getMyProfile = async (req: Request, res: Response) => {
   });
 };
 
+const updateMyProfile = async (req: Request, res: Response) => {
+  const user = req.user;
+  const payload = req.body;
+  const result = await userServices.updateMyProfile(user, payload);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile updated successfully!",
+    data: result,
+  });
+};
+
 export const userControllers = {
   getAllUsers,
   createAdmin,
@@ -78,4 +90,5 @@ export const userControllers = {
   createPatient,
   updateUserStatus,
   getMyProfile,
+  updateMyProfile,
 };
