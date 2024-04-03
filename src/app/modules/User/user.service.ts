@@ -8,6 +8,7 @@ import { calculatePagination } from "../../helpers/paginationHelper";
 import { IOptions, IParams } from "../Admin/admin.interface";
 import { userSearchAbleFields } from "./user.constant";
 import { JwtPayload } from "jsonwebtoken";
+import { IAuth } from "../../interfaces/common";
 
 const getAllUsersFromDB = async (params: IParams, options: IOptions) => {
   const { searchTerm, ...filterData } = params;
@@ -180,7 +181,7 @@ const updateStatus = async (id: string, status: UserStatus) => {
   return update;
 };
 
-const getMyProfile = async (user: JwtPayload) => {
+const getMyProfile = async (user: IAuth & JwtPayload) => {
   const role = user.role as userRole;
 
   let userData;
