@@ -1,7 +1,7 @@
-import { Admin, Prisma, PrismaClient, UserStatus } from "@prisma/client";
-import { searchableFields } from "./admin.constant";
+import { Doctor, Prisma, PrismaClient, UserStatus } from "@prisma/client";
+import { doctorSearchableFields } from "./doctor.constant";
 import { calculatePagination } from "../../helpers/paginationHelper";
-import { IParams } from "./admin.interface";
+import { IDoctorFilterRequest } from "./doctor.interface";
 import { IOptions } from "../../interfaces/common";
 
 const prisma = new PrismaClient();
@@ -10,15 +10,18 @@ export interface SearchParams {
   searchTerm: string;
 }
 
-const getAllAdminsFormDB = async (params: IParams, options: IOptions) => {
+const getAllDoctorsFormDB = async (
+  params: IDoctorFilterRequest,
+  options: IOptions,
+) => {
   const { searchTerm, ...filterData } = params;
   const { limit, skip } = calculatePagination(options);
 
-  const andOption: Prisma.AdminWhereInput[] = [];
+  const andOption: Prisma.DoctorWhereInput[] = [];
 
   if (searchTerm) {
     andOption.push({
-      OR: searchableFields.map(field => ({
+      OR: doctorSearchableFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: "insensitive",
@@ -37,12 +40,12 @@ const getAllAdminsFormDB = async (params: IParams, options: IOptions) => {
     });
   }
 
-  const whereOption: Prisma.AdminWhereInput = {
+  const whereOption: Prisma.DoctorWhereInput = {
     AND: andOption,
     isDeleted: false,
   };
 
-  const data = await prisma.admin.findMany({
+  const data = await prisma.doctor.findMany({
     where: whereOption,
     skip,
     take: limit,
@@ -65,8 +68,8 @@ const getAllAdminsFormDB = async (params: IParams, options: IOptions) => {
   return { data, meta };
 };
 
-const getSingleDataFromDB = async (id: string): Promise<Admin | null> => {
-  const data = await prisma.admin.findUniqueOrThrow({
+const getSingleDataFromDB = async (id: string): Promise<Doctor | null> => {
+  const data = await prisma.doctor.findUniqueOrThrow({
     where: {
       id: id,
       isDeleted: false,
@@ -76,17 +79,17 @@ const getSingleDataFromDB = async (id: string): Promise<Admin | null> => {
   return data;
 };
 
-const updateAdminDataIntoDB = async (
+const updateDoctorDataIntoDB = async (
   id: string,
-  data: Partial<Admin>,
-): Promise<Admin | null> => {
-  await prisma.admin.findUniqueOrThrow({
+  data: Partial<Doctor>,
+): Promise<Doctor | null> => {
+  await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
     },
   });
 
-  const updatedData = await prisma.admin.update({
+  const updatedData = await prisma.doctor.update({
     where: {
       id,
       isDeleted: false,
@@ -97,8 +100,8 @@ const updateAdminDataIntoDB = async (
   return updatedData;
 };
 
-const deleteDataFromDB = async (id: string): Promise<Admin | null> => {
-  await prisma.admin.findUniqueOrThrow({
+const deleteDataFromDB = async (id: string): Promise<Doctor | null> => {
+  await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
       isDeleted: false,
@@ -106,30 +109,30 @@ const deleteDataFromDB = async (id: string): Promise<Admin | null> => {
   });
 
   const deletedData = await prisma.$transaction(async transaction => {
-    const admin = await transaction.admin.delete({
+    const Doctor = await transaction.doctor.delete({
       where: {
         id,
       },
     });
     await transaction.user.delete({
       where: {
-        email: admin.email,
+        email: Doctor.email,
       },
     });
-    return admin;
+    return Doctor;
   });
 
   return deletedData;
 };
-const softDeleteDataFromDB = async (id: string): Promise<Admin | null> => {
-  await prisma.admin.findUniqueOrThrow({
+const softDeleteDataFromDB = async (id: string): Promise<Doctor | null> => {
+  await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
     },
   });
 
   const deletedData = await prisma.$transaction(async transaction => {
-    const admin = await transaction.admin.update({
+    const Doctor = await transaction.doctor.update({
       where: {
         id,
       },
@@ -139,22 +142,22 @@ const softDeleteDataFromDB = async (id: string): Promise<Admin | null> => {
     });
     await transaction.user.update({
       where: {
-        email: admin.email,
+        email: Doctor.email,
       },
       data: {
         status: UserStatus.DELETED,
       },
     });
-    return admin;
+    return Doctor;
   });
 
   return deletedData;
 };
 
-export const AdminService = {
-  getAllAdminsFormDB,
+export const DoctorService = {
+  getAllDoctorsFormDB,
   getSingleDataFromDB,
-  updateAdminDataIntoDB,
+  updateDoctorDataIntoDB,
   deleteDataFromDB,
   softDeleteDataFromDB,
 };

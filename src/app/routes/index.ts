@@ -3,6 +3,7 @@ import { adminRoutes } from "../modules/Admin/admin.routes";
 import { userRoutes } from "../modules/User/user.routes";
 import { authRoutes } from "../modules/Auth/auth.routes";
 import { specialtiesRoute } from "../modules/Specialties/specialties.routes";
+import { doctorRoutes } from "../modules/Doctor/doctor.routes";
 
 const appRouter = Router();
 
@@ -14,6 +15,10 @@ const options = [
   {
     path: "/admin",
     routes: adminRoutes,
+  },
+  {
+    path: "/doctor",
+    routes: doctorRoutes,
   },
   {
     path: "/auth",

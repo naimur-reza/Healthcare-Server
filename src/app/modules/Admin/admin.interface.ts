@@ -3,10 +3,3 @@ export interface IParams {
   email?: string;
   searchTerm?: string;
 }
-
-export interface IOptions {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: string;
-}
