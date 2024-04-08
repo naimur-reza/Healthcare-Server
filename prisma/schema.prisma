@@ -72,7 +72,8 @@ model Doctor {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  user User @relation(fields: [email], references: [email])
+  user               User                 @relation(fields: [email], references: [email])
+  doctorSpeacialties DoctorSpeacialties[]
 
   @@map("doctors")
 }
@@ -97,4 +98,21 @@ enum Gender {
   MALE
   FEMALE
   OTHERS
+}
+
+model Specialties {
+  id                 String               @id @default(uuid())
+  title              String
+  icon               String
+  doctorSpeacialties DoctorSpeacialties[]
+
+  @@map("specialties")
+}
+
+model DoctorSpeacialties {
+  specialtiesId String      @id @default(uuid())
+  specialties   Specialties @relation(references: [id], fields: [specialtiesId])
+
+  doctorId String
+  doctor   Doctor @relation(references: [id], fields: [doctorId])
 }
