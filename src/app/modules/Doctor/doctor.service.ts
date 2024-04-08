@@ -1,7 +1,7 @@
 import { Doctor, Prisma, PrismaClient, UserStatus } from "@prisma/client";
 import { doctorSearchableFields } from "./doctor.constant";
 import { calculatePagination } from "../../helpers/paginationHelper";
-import { IDoctorFilterRequest } from "./doctor.interface";
+import { IDoctorFilterRequest, TDoctor } from "./doctor.interface";
 import { IOptions } from "../../interfaces/common";
 
 const prisma = new PrismaClient();
@@ -81,23 +81,54 @@ const getSingleDataFromDB = async (id: string): Promise<Doctor | null> => {
 
 const updateDoctorDataIntoDB = async (
   id: string,
-  data: Partial<Doctor>,
-): Promise<Doctor | null> => {
+  payload: Partial<TDoctor>,
+) => {
+  const { specialties, ...doctorData } = payload;
+
   await prisma.doctor.findUniqueOrThrow({
     where: {
       id,
     },
   });
 
-  const updatedData = await prisma.doctor.update({
-    where: {
-      id,
-      isDeleted: false,
-    },
-    data: data,
+  const result = await prisma.$transaction(async transaction => {
+    const doctorInfo = await transaction.doctor.update({
+      where: {
+        id,
+        isDeleted: false,
+      },
+      include: {
+        doctorSpecialties: true,
+      },
+      data: doctorData,
+    });
+
+    if (specialties && specialties.length > 0) {
+      for (const item of specialties) {
+        if (item.isDeleted) {
+          const removeSpecialties = await prisma.doctorSpecialties.deleteMany({
+            where: {
+              doctorId: doctorInfo.id,
+              specialtiesId: item.specialtiesId,
+            },
+          });
+          return removeSpecialties;
+        }
+        if (!item.isDeleted) {
+          const createSpecialties = await prisma.doctorSpecialties.create({
+            data: {
+              doctorId: doctorInfo.id,
+              specialtiesId: item.specialtiesId,
+            },
+          });
+
+          return createSpecialties;
+        }
+      }
+    }
   });
 
-  return updatedData;
+  return result;
 };
 
 const deleteDataFromDB = async (id: string): Promise<Doctor | null> => {

@@ -3,6 +3,8 @@ import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { userRole } from "@prisma/client";
 import { DoctorController } from "./doctor.controller";
+import { DoctorValidation } from "./doctor.validation";
+import validateRequest from "../../middlewares/validateRequest";
 
 const router = Router();
 
@@ -21,7 +23,7 @@ router.get(
 router.patch(
   "/:id",
   checkAuth(userRole.SUPER_ADMIN, userRole.ADMIN),
-
+  validateRequest(DoctorValidation.updateDoctorSchema),
   DoctorController.updateDoctorData,
 );
 
