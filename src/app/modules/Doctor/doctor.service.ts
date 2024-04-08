@@ -91,7 +91,7 @@ const updateDoctorDataIntoDB = async (
     },
   });
 
-  const result = await prisma.$transaction(async transaction => {
+  await prisma.$transaction(async transaction => {
     const doctorInfo = await transaction.doctor.update({
       where: {
         id,
@@ -135,6 +135,18 @@ const updateDoctorDataIntoDB = async (
     }
   });
 
+  const result = await prisma.doctor.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
+    },
+  });
   return result;
 };
 
