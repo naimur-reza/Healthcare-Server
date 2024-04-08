@@ -7,14 +7,25 @@ import { specialtiesController } from "./specialties.controller";
 
 const router = Router();
 
-router.get("/", checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN));
+router.get(
+  "/",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN),
+  specialtiesController.getAllSpecialties,
+);
 
 router.post(
-  "/create-specialties",
+  "/",
   checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
   upload.single("file"),
   parseFile,
   specialtiesController.createSpecialties,
+);
+
+router.delete(
+  "/:id",
+  checkAuth(userRole.ADMIN, userRole.SUPER_ADMIN, userRole.DOCTOR),
+
+  specialtiesController.deleteSpecialties,
 );
 
 export const specialtiesRoute = router;
