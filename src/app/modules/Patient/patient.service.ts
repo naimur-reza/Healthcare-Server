@@ -6,10 +6,6 @@ import { patientSearchableFields } from "./patient.constant";
 
 const prisma = new PrismaClient();
 
-export interface SearchParams {
-  searchTerm: string;
-}
-
 const getAllPatientsFormDB = async (params: IParams, options: IOptions) => {
   const { searchTerm, ...filterData } = params;
   const { limit, skip } = calculatePagination(options);
@@ -86,23 +82,59 @@ const getSingleDataFromDB = async (id: string): Promise<Patient | null> => {
 
 const updatePatientDataIntoDB = async (
   id: string,
-  data: Partial<Patient>,
+  payload: any,
 ): Promise<Patient | null> => {
-  await prisma.patient.findUniqueOrThrow({
+  const { patientHealthData, medicalReport, ...patientInfo } = payload;
+
+  const patient = await prisma.patient.findUniqueOrThrow({
     where: {
       id,
     },
   });
 
-  const updatedData = await prisma.patient.update({
-    where: {
-      id,
-      isDeleted: false,
-    },
-    data: data,
+  await prisma.$transaction(async transactionClient => {
+    await transactionClient.patient.update({
+      where: {
+        id,
+        isDeleted: false,
+      },
+      data: patientInfo,
+    });
+
+    if (patientHealthData) {
+      await transactionClient.patientHealthData.upsert({
+        where: {
+          patientId: patient.id,
+        },
+        update: patientHealthData,
+        create: {
+          patientId: patient.id,
+          ...patientHealthData,
+        },
+      });
+    }
+
+    if (medicalReport) {
+      await transactionClient.medicalReport.create({
+        data: {
+          patientId: patient.id,
+          ...medicalReport,
+        },
+      });
+    }
   });
 
-  return updatedData;
+  const result = await prisma.patient.findUnique({
+    where: {
+      id: patient.id,
+    },
+    include: {
+      patientHealthData: true,
+      medicalReport: true,
+    },
+  });
+
+  return result;
 };
 
 const deleteDataFromDB = async (id: string): Promise<Patient | null> => {
@@ -133,6 +165,7 @@ const deleteDataFromDB = async (id: string): Promise<Patient | null> => {
 
   return deletedData;
 };
+
 const softDeleteDataFromDB = async (id: string): Promise<Patient | null> => {
   await prisma.patient.findUniqueOrThrow({
     where: {
