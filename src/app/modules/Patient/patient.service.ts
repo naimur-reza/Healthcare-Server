@@ -54,6 +54,10 @@ const getAllPatientsFormDB = async (params: IParams, options: IOptions) => {
         : {
             createdAt: "asc",
           },
+    include: {
+      medicalReport: true,
+      patientHealthData: true,
+    },
   });
 
   const meta = {
@@ -70,6 +74,10 @@ const getSingleDataFromDB = async (id: string): Promise<Patient | null> => {
     where: {
       id: id,
       isDeleted: false,
+    },
+    include: {
+      medicalReport: true,
+      patientHealthData: true,
     },
   });
 
@@ -109,6 +117,10 @@ const deleteDataFromDB = async (id: string): Promise<Patient | null> => {
     const Patient = await transaction.patient.delete({
       where: {
         id,
+      },
+      include: {
+        medicalReport: true,
+        patientHealthData: true,
       },
     });
     await transaction.user.delete({
