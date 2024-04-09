@@ -1,7 +1,7 @@
 import { Patient, Prisma, PrismaClient, UserStatus } from "@prisma/client";
 import { calculatePagination } from "../../helpers/paginationHelper";
 import { IOptions } from "../../interfaces/common";
-import { IParams } from "./patient.interface";
+import { IParams, TPatient } from "./patient.interface";
 import { patientSearchableFields } from "./patient.constant";
 
 const prisma = new PrismaClient();
@@ -82,7 +82,7 @@ const getSingleDataFromDB = async (id: string): Promise<Patient | null> => {
 
 const updatePatientDataIntoDB = async (
   id: string,
-  payload: any,
+  payload: Partial<TPatient>,
 ): Promise<Patient | null> => {
   const { patientHealthData, medicalReport, ...patientInfo } = payload;
 

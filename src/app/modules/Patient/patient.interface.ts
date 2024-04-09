@@ -1,4 +1,4 @@
-import { Patient } from "@prisma/client";
+import { MedicalReport, PatientHealthData } from "@prisma/client";
 
 export interface IParams {
   name?: string;
@@ -6,9 +6,13 @@ export interface IParams {
   searchTerm?: string;
 }
 
-export type TPatient = Patient;
+interface IPatient {
+  name: string;
+  address: string;
+  contactNumber: string;
+}
 
-// {
-//   patientHealthData?: Pick<PatientHealthData, "updatedAt">;
-//   medicalReport?: Pick<MedicalReport, 'patientId'>;
-// };
+export type TPatient = IPatient & {
+  patientHealthData: Omit<PatientHealthData, "patientId">;
+  medicalReport: Omit<MedicalReport, "patientId">;
+};
