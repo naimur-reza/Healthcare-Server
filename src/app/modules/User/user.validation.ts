@@ -28,7 +28,7 @@ const doctorSchema = z.object({
       qualification: z.string(),
       currentWorkingPlace: z.string(),
       designation: z.string(),
-      averageRating: z.number(),
+      averageRating: z.number().optional(),
     }),
   }),
 });

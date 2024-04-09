@@ -5,10 +5,10 @@ import { sendImageToCloudinary } from "../../helpers/fileUploader";
 import { UploadApiResponse } from "cloudinary";
 import { IAdmin, IDoctor, IPatient } from "./user.interface";
 import { calculatePagination } from "../../helpers/paginationHelper";
-import { IOptions, IParams } from "../Admin/admin.interface";
+import { IParams } from "../Admin/admin.interface";
 import { userSearchAbleFields } from "./user.constant";
 import { JwtPayload } from "jsonwebtoken";
-import { IAuth } from "../../interfaces/common";
+import { IAuth, IOptions } from "../../interfaces/common";
 
 const getAllUsersFromDB = async (params: IParams, options: IOptions) => {
   const { searchTerm, ...filterData } = params;
