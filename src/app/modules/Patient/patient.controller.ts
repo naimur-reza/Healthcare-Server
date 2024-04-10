@@ -7,7 +7,10 @@ import sendResponse from "../../utils/sendResponse";
 const getAllPatients = catchAsync(async (req, res) => {
   const filter = pick(req.query, patientFilterableFields);
   const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
-  const { data, meta } = await PatientService.getAllPatientsFormDB(filter, options);
+  const { data, meta } = await PatientService.getAllPatientsFormDB(
+    filter,
+    options,
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -51,6 +54,7 @@ const deletePatientData = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 const softPatientDelete = catchAsync(async (req, res) => {
   const result = await PatientService.softDeleteDataFromDB(req.params.id);
 

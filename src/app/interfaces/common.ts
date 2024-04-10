@@ -1,4 +1,6 @@
-export interface IAuth {
+import { JwtPayload } from "jsonwebtoken";
+
+export interface IUser extends JwtPayload {
   email: string;
   role: string;
 }
