@@ -3,7 +3,7 @@ import { calculatePagination } from "../../helpers/paginationHelper";
 import prisma from "../../shared/prisma";
 import { ISchedule } from "./schedule.interface";
 import { addHours, addMinutes, format } from "date-fns";
-import { IOptions } from "../../interfaces/common";
+import { IOptions, IUser } from "../../interfaces/common";
 import { IParams } from "../DoctorSchedule/schedule.interface";
 
 const convertDateTime = async (date: Date) => {
@@ -74,24 +74,37 @@ const insertIntoDB = async (payload: ISchedule) => {
   return schedules;
 };
 
-const getAllFromDB = async (params: IParams, options: IOptions) => {
-  const { startDate, endDate, ...filterData } = params;
+const getAllFromDB = async (
+  params: IParams,
+  options: IOptions,
+  user: IUser,
+) => {
+  const { startDate, endDate } = params;
+  console.log(params);
   const { limit, skip } = calculatePagination(options);
 
-  const andOption: Prisma.ScheduleWhereInput[] = [];
+  const andCondition: Prisma.ScheduleWhereInput[] = [];
 
-  if (Object.keys(filterData).length > 0) {
-    andOption.push({
-      AND: Object.keys(filterData).map(key => ({
-        [key]: {
-          equals: (filterData as any)[key],
+  if (startDate && endDate) {
+    console.log(startDate, endDate);
+    andCondition.push({
+      AND: [
+        {
+          startDateTime: {
+            gte: startDate,
+          },
         },
-      })),
+        {
+          endDateTime: {
+            lte: endDate,
+          },
+        },
+      ],
     });
   }
 
   const whereCondition: Prisma.ScheduleWhereInput =
-    andOption.length > 0 ? { AND: andOption } : {};
+    andCondition.length > 0 ? { AND: andCondition } : {};
 
   const result = await prisma.schedule.findMany({
     where: whereCondition,
