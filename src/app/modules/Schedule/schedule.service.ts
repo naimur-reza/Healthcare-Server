@@ -1,6 +1,10 @@
+import { Prisma, Schedule } from "@prisma/client";
+import { calculatePagination } from "../../helpers/paginationHelper";
 import prisma from "../../shared/prisma";
 import { ISchedule } from "./schedule.interface";
 import { addHours, addMinutes, format } from "date-fns";
+import { IOptions } from "../../interfaces/common";
+import { IParams } from "../DoctorSchedule/schedule.interface";
 
 const convertDateTime = async (date: Date) => {
   const offset = date.getTimezoneOffset() * 60000;
@@ -70,6 +74,72 @@ const insertIntoDB = async (payload: ISchedule) => {
   return schedules;
 };
 
+const getAllFromDB = async (params: IParams, options: IOptions) => {
+  const { startDate, endDate, ...filterData } = params;
+  const { limit, skip } = calculatePagination(options);
+
+  const andOption: Prisma.ScheduleWhereInput[] = [];
+
+  if (Object.keys(filterData).length > 0) {
+    andOption.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
+  const whereCondition: Prisma.ScheduleWhereInput =
+    andOption.length > 0 ? { AND: andOption } : {};
+
+  const result = await prisma.schedule.findMany({
+    where: whereCondition,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "asc",
+          },
+  });
+
+  const meta = {
+    page: Number(options.page) || 1,
+    limit,
+    total: result.length,
+  };
+
+  return {
+    meta,
+    result,
+  };
+};
+
+const getByIdFromDB = async (id: string): Promise<Schedule | null> => {
+  const result = await prisma.schedule.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
+const deleteFromDB = async (id: string): Promise<Schedule> => {
+  const result = await prisma.schedule.delete({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
 export const scheduleService = {
   insertIntoDB,
+  getAllFromDB,
+  getByIdFromDB,
+  deleteFromDB,
 };
