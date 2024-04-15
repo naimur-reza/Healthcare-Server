@@ -7,7 +7,7 @@ import { userRole } from "@prisma/client";
 
 const router = Router();
 
-router.get("/", scheduleController.getAllSchedule);
+router.get("/", checkAuth(userRole.DOCTOR), scheduleController.getAllSchedule);
 
 router.post(
   "/",

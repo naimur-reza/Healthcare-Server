@@ -80,13 +80,12 @@ const getAllFromDB = async (
   user: IUser,
 ) => {
   const { startDate, endDate } = params;
-  console.log(params);
+
   const { limit, skip } = calculatePagination(options);
 
   const andCondition: Prisma.ScheduleWhereInput[] = [];
 
   if (startDate && endDate) {
-    console.log(startDate, endDate);
     andCondition.push({
       AND: [
         {
@@ -103,11 +102,24 @@ const getAllFromDB = async (
     });
   }
 
+  const doctorSchedules = await prisma.doctorSchedule.findMany({
+    where: {
+      doctor: {
+        email: user.email,
+      },
+    },
+  });
+
+  const doctorSchedulesId = doctorSchedules.map(item => item.scheduleId);
+
   const whereCondition: Prisma.ScheduleWhereInput =
     andCondition.length > 0 ? { AND: andCondition } : {};
 
   const result = await prisma.schedule.findMany({
-    where: whereCondition,
+    where: {
+      ...whereCondition,
+      id: { notIn: doctorSchedulesId },
+    },
     skip,
     take: limit,
     orderBy:
@@ -119,6 +131,8 @@ const getAllFromDB = async (
             createdAt: "asc",
           },
   });
+
+  console.log(doctorSchedules);
 
   const meta = {
     page: Number(options.page) || 1,
