@@ -18,20 +18,18 @@ const createDoctorSchedule = catchAsync(async (req, res) => {
   });
 });
 
-const getAllSchedule = catchAsync(async (req, res) => {
-  const filterParams = pick(req.query, [""]);
+const getMySchedule = catchAsync(async (req, res) => {
+  const filterParams = pick(req.query, ["startDate", "endDate", "isBooked"]);
   const options = pick(req.query, ["limit", "sortBy", "sortOrder", "page"]);
-  const user = req.user;
 
-  const { result, meta } = await doctorScheduleService.getAllFromDB(
+  const { result, meta } = await doctorScheduleService.getMySchedule(
     filterParams,
     options,
-    user,
   );
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Schedules retrieved successfully!",
+    message: "My schedules retrieved successfully!",
     meta,
     data: result,
   });
@@ -39,5 +37,5 @@ const getAllSchedule = catchAsync(async (req, res) => {
 
 export const doctorScheduleController = {
   createDoctorSchedule,
-  getAllSchedule,
+  getMySchedule,
 };
