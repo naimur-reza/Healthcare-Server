@@ -6,6 +6,18 @@ import { userRole } from "@prisma/client";
 const router = Router();
 
 // Define your doctor schedule route here
+
+router.get(
+  "/",
+  checkAuth(
+    userRole.SUPER_ADMIN,
+    userRole.ADMIN,
+    userRole.DOCTOR,
+    userRole.PATIENT,
+  ),
+  doctorScheduleController.getAllFromDB,
+);
+
 router.post(
   "/",
   checkAuth(userRole.DOCTOR),
