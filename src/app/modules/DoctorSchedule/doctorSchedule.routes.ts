@@ -18,6 +18,10 @@ router.get(
   doctorScheduleController.getMySchedule,
 );
 
-// router.delete('/:id', checkAuth(userRole.DOCTOR), doctorScheduleController)
+router.delete(
+  "/:id",
+  checkAuth(userRole.DOCTOR),
+  doctorScheduleController.deleteSchedule,
+);
 
 export const doctorScheduleRoutes = router;

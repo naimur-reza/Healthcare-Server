@@ -111,10 +111,7 @@ const deleteFromDB = async (user: IUser, scheduleId: string) => {
   });
 
   if (isBookedSchedule) {
-    throw new GenericError(
-      401,
-      "You can not delete the schedule because of the schedule is already booked!",
-    );
+    throw new GenericError(401, "Cant not delete booked schedules.");
   }
 
   const result = await prisma.doctorSchedule.delete({
