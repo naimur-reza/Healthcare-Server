@@ -1,31 +1,45 @@
 import axios from "axios";
+import configs from "../../configs";
+import prisma from "../../shared/prisma";
 
-const initPayment = async () => {
+const initPayment = async (appointmentId: string) => {
+  const appointmentData = await prisma.appointment.findFirstOrThrow({
+    where: {
+      id: appointmentId,
+    },
+    include: {
+      patient: true,
+      payment: true,
+    },
+  });
+
+  const { patient, payment } = appointmentData;
+
   const data = {
-    store_id: "rezao66214be9628d2",
-    store_passwd: "rezao66214be9628d2@ssl",
-    total_amount: 100,
+    store_id: configs.ssl.store_id,
+    store_passwd: configs.ssl.store_pass,
+    total_amount: payment?.amount,
     currency: "BDT",
-    tran_id: "REF123", // use unique tran_id for each api call
-    success_url: "http://localhost:3030/success",
-    fail_url: "http://localhost:3030/fail",
-    cancel_url: "http://localhost:3030/cancel",
+    tran_id: payment?.transactionId, // use unique tran_id for each api call
+    success_url: configs.ssl.success_url,
+    fail_url: configs.ssl.failed_url,
+    cancel_url: configs.ssl.cancel_url,
     ipn_url: "http://localhost:3030/ipn",
-    shipping_method: "Courier",
-    product_name: "Computer.",
-    product_category: "Electronic",
+    shipping_method: "N/A",
+    product_name: "Service.",
+    product_category: "Health-Care",
     product_profile: "general",
-    cus_name: "Customer Name",
-    cus_email: "customer@example.com",
-    cus_add1: "Dhaka",
-    cus_add2: "Dhaka",
-    cus_city: "Dhaka",
-    cus_state: "Dhaka",
+    cus_name: patient.name,
+    cus_email: patient.email,
+    cus_add1: patient.address,
+    cus_add2: patient.address,
+    cus_city: patient.address,
+    cus_state: patient.address,
     cus_postcode: "1000",
     cus_country: "Bangladesh",
-    cus_phone: "01711111111",
+    cus_phone: patient.contactNumber,
     cus_fax: "01711111111",
-    ship_name: "Customer Name",
+    ship_name: "N/A",
     ship_add1: "Dhaka",
     ship_add2: "Dhaka",
     ship_city: "Dhaka",

@@ -6,7 +6,7 @@ import { paymentController } from "./payment.controller";
 const router = Router();
 
 router.post(
-  "/",
+  "/init-payment/:appointmentId",
   checkAuth(userRole.PATIENT, userRole.SUPER_ADMIN, userRole.PATIENT),
   paymentController.initPayment,
 );

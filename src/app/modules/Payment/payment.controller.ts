@@ -3,7 +3,8 @@ import sendResponse from "../../utils/sendResponse";
 import { paymentService } from "./payment.service";
 
 const initPayment = catchAsync(async (req, res) => {
-  const result = await paymentService.initPayment();
+  const { appointmentId } = req.params;
+  const result = await paymentService.initPayment(appointmentId);
   sendResponse(res, {
     statusCode: 200,
     success: true,
