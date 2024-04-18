@@ -18,7 +18,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const createAdmin = async (req: Request, res: Response) => {
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const admin = await userServices.createAdmin(req.file, req.body);
   sendResponse(res, {
     statusCode: 200,
@@ -26,9 +26,9 @@ const createAdmin = async (req: Request, res: Response) => {
     message: "Admin created successfully!",
     data: admin,
   });
-};
+});
 
-const createDoctor = async (req: Request, res: Response) => {
+const createDoctor = catchAsync(async (req: Request, res: Response) => {
   const doctor = await userServices.createDoctor(req.file, req.body);
   sendResponse(res, {
     statusCode: 200,
@@ -36,9 +36,9 @@ const createDoctor = async (req: Request, res: Response) => {
     message: "Doctor created successfully!",
     data: doctor,
   });
-};
+});
 
-const createPatient = async (req: Request, res: Response) => {
+const createPatient = catchAsync(async (req: Request, res: Response) => {
   const patient = await userServices.createPatient(req.file, req.body);
   sendResponse(res, {
     statusCode: 200,
@@ -46,9 +46,9 @@ const createPatient = async (req: Request, res: Response) => {
     message: "Patient created successfully!",
     data: patient,
   });
-};
+});
 
-const updateUserStatus = async (req: Request, res: Response) => {
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
   const result = await userServices.updateStatus(id, status);
@@ -58,9 +58,9 @@ const updateUserStatus = async (req: Request, res: Response) => {
     message: "User status successfully!",
     data: result,
   });
-};
+});
 
-const getMyProfile = async (req: Request, res: Response) => {
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const result = await userServices.getMyProfile(user);
   sendResponse(res, {
@@ -69,19 +69,19 @@ const getMyProfile = async (req: Request, res: Response) => {
     message: "Profile retrieved successfully!",
     data: result,
   });
-};
+});
 
-const updateMyProfile = async (req: Request, res: Response) => {
+const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const payload = req.body;
-  const result = await userServices.updateMyProfile(req.file,user, payload);
+  const result = await userServices.updateMyProfile(req.file, user, payload);
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Profile updated successfully!",
     data: result,
   });
-};
+});
 
 export const userControllers = {
   getAllUsers,
