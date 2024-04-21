@@ -9,6 +9,7 @@ import { scheduleRoutes } from "../modules/Schedule/schedule.routes";
 import { doctorScheduleRoutes } from "../modules/DoctorSchedule/doctorSchedule.routes";
 import { appointmentRoutes } from "../modules/Appointment/appointment.routes";
 import { paymentRoutes } from "../modules/Payment/payment.routes";
+import { prescriptionRoutes } from "../modules/Prescription/prescription.routes";
 
 const appRouter = Router();
 
@@ -52,7 +53,10 @@ const options = [
   {
     path: "/payments",
     routes: paymentRoutes,
-  },
+  },{
+    path:'/prescription',
+    routes: prescriptionRoutes
+  }
 ];
 
 options.forEach(item => appRouter.use(item.path, item.routes));
