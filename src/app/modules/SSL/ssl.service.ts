@@ -1,5 +1,6 @@
 import axios from "axios";
 import configs from "../../configs";
+import GenericError from "../../errors/GenericError";
 // import { IPaymentData } from "./ssl.interface";
 
 const initSSLPayment = async (paymentData: any) => {
@@ -48,6 +49,21 @@ const initSSLPayment = async (paymentData: any) => {
   return res;
 };
 
+
+const validatePayment = async (payload: any) => {
+  try {
+      const response = await axios({
+          method: 'GET',
+          url: `${configs.ssl.ssl_validation_api}?val_id=${payload.val_id}&store_id=${configs.ssl.store_id}&store_passwd=${configs.ssl.store_pass}&format=json`
+      });
+
+      return response.data;
+  }
+  catch (err) {
+      throw new GenericError(401, "Payment validation failed!")
+  }
+}
+
 export const sslService = {
-  initSSLPayment,
+  initSSLPayment,validatePayment
 };
