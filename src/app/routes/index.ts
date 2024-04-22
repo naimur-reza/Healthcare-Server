@@ -11,6 +11,7 @@ import { appointmentRoutes } from "../modules/Appointment/appointment.routes";
 import { paymentRoutes } from "../modules/Payment/payment.routes";
 import { prescriptionRoutes } from "../modules/Prescription/prescription.routes";
 import { reviewRoutes } from "../modules/Review/review.routes";
+import { metaRoutes } from "../modules/Meta/meta.routes";
 
 const appRouter = Router();
 
@@ -56,12 +57,16 @@ const options = [
     routes: paymentRoutes,
   },
   {
-    path:'/prescription',
-    routes: prescriptionRoutes
+    path: "/prescription",
+    routes: prescriptionRoutes,
   },
   {
-    path:'/review',
-    routes: reviewRoutes
+    path: "/review",
+    routes: reviewRoutes,
+  },
+  {
+    path: "/meta",
+    routes: metaRoutes,
   },
 ];
 
