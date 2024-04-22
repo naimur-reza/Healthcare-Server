@@ -1,5 +1,6 @@
-import { userRole } from "@prisma/client";
+import { PaymentStatus, userRole } from "@prisma/client";
 import { IUser } from "../../interfaces/common";
+import prisma from "../../shared/prisma";
 
 const fetchDashboardMetaData = async (user: IUser) => {
   let metaData;
@@ -23,32 +24,196 @@ const fetchDashboardMetaData = async (user: IUser) => {
   return metaData;
 };
 
-const getSuperAdminMetaData = () => {
+const getSuperAdminMetaData = async () => {
+  const appointmentCount = await prisma.appointment.count();
+  const patientCount = await prisma.patient.count();
+  const doctorCount = await prisma.doctor.count();
+  const adminCount = await prisma.admin.count();
+  const paymentCount = await prisma.payment.count();
+
+  const totalRevenue = await prisma.payment.aggregate({
+    _sum: { amount: true },
+    where: {
+      status: PaymentStatus.PAID,
+    },
+  });
+
+  const barChartData = await getBarChartData();
+  const pieCharData = await getPieChartData();
+
   return {
-    title: "Super Admin Dashboard",
-    description: "This is the super admin dashboard.",
+    appointmentCount,
+    patientCount,
+    doctorCount,
+    adminCount,
+    paymentCount,
+    totalRevenue,
+    barChartData,
+    pieCharData,
   };
 };
 
-const getAdminMetaData = () => {
+const getAdminMetaData = async () => {
+  const appointmentCount = await prisma.appointment.count();
+  const patientCount = await prisma.patient.count();
+  const doctorCount = await prisma.doctor.count();
+  const paymentCount = await prisma.payment.count();
+
+  const totalRevenue = await prisma.payment.aggregate({
+    _sum: { amount: true },
+    where: {
+      status: PaymentStatus.PAID,
+    },
+  });
+
+  const barChartData = await getBarChartData();
+  const pieCharData = await getPieChartData();
+
   return {
-    title: "Admin Dashboard",
-    description: "This is the admin dashboard.",
+    appointmentCount,
+    patientCount,
+    doctorCount,
+    paymentCount,
+    totalRevenue,
+    barChartData,
+    pieCharData,
   };
 };
 
-const getDoctorMetaData = (user: IUser) => {
+const getDoctorMetaData = async (user: IUser) => {
+  const doctorData = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      email: user?.email,
+    },
+  });
+
+  const appointmentCount = await prisma.appointment.count({
+    where: {
+      doctorId: doctorData.id,
+    },
+  });
+
+  const patientCount = await prisma.appointment.groupBy({
+    by: ["patientId"],
+    _count: {
+      id: true,
+    },
+  });
+
+  const reviewCount = await prisma.review.count({
+    where: {
+      doctorId: doctorData.id,
+    },
+  });
+
+  const totalRevenue = await prisma.payment.aggregate({
+    _sum: {
+      amount: true,
+    },
+    where: {
+      appointment: {
+        doctorId: doctorData.id,
+      },
+      status: PaymentStatus.PAID,
+    },
+  });
+
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: ["status"],
+    _count: { id: true },
+    where: {
+      doctorId: doctorData.id,
+    },
+  });
+
+  const formattedAppointmentStatusDistribution =
+    appointmentStatusDistribution.map(({ status, _count }) => ({
+      status,
+      count: Number(_count.id),
+    }));
+
   return {
-    title: "Doctor Dashboard",
-    description: `This is the dashboard for Dr. ${user.name}.`,
+    appointmentCount,
+    reviewCount,
+    patientCount: patientCount.length,
+    totalRevenue,
+    formattedAppointmentStatusDistribution,
   };
 };
 
-const getPatientMetaData = (user: IUser) => {
+const getPatientMetaData = async (user: IUser) => {
+  const patientData = await prisma.patient.findUniqueOrThrow({
+    where: {
+      email: user?.email,
+    },
+  });
+
+  const appointmentCount = await prisma.appointment.count({
+    where: {
+      patientId: patientData.id,
+    },
+  });
+
+  const prescriptionCount = await prisma.prescription.count({
+    where: {
+      patientId: patientData.id,
+    },
+  });
+
+  const reviewCount = await prisma.review.count({
+    where: {
+      patientId: patientData.id,
+    },
+  });
+
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: ["status"],
+    _count: { id: true },
+    where: {
+      patientId: patientData.id,
+    },
+  });
+
+  const formattedAppointmentStatusDistribution =
+    appointmentStatusDistribution.map(({ status, _count }) => ({
+      status,
+      count: Number(_count.id),
+    }));
+
   return {
-    title: "Patient Dashboard",
-    description: `This is the dashboard for ${user.name}.`,
+    appointmentCount,
+    prescriptionCount,
+    reviewCount,
+    formattedAppointmentStatusDistribution,
   };
+};
+
+const getBarChartData = async () => {
+  const appointmentCountByMonth: { month: Date; count: bigint }[] =
+    await prisma.$queryRaw`
+        SELECT DATE_TRUNC('month', "createdAt") AS month,
+        CAST(COUNT(*) AS INTEGER) AS count
+        FROM "appointments"
+        GROUP BY month
+        ORDER BY month ASC
+    `;
+
+  return appointmentCountByMonth;
+};
+
+const getPieChartData = async () => {
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: ["status"],
+    _count: { id: true },
+  });
+
+  const formattedAppointmentStatusDistribution =
+    appointmentStatusDistribution.map(({ status, _count }) => ({
+      status,
+      count: Number(_count.id),
+    }));
+
+  return formattedAppointmentStatusDistribution;
 };
 
 export const metaService = {
